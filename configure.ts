@@ -12,6 +12,10 @@
 |
 */
 
-import ConfigureCommand from '@adonisjs/core/commands/configure'
+import type ConfigureCommand from '@adonisjs/core/commands/configure';
 
-export async function configure(_command: ConfigureCommand) {}
+const configure = async function (_command: ConfigureCommand): Promise<void> {
+  // Todo: Add function
+};
+
+export { configure };
