@@ -1,5 +1,5 @@
 {
-  "name": "adonis-permission",
+  "name": "adonis-lucid-permission",
   "description": "",
   "version": "0.0.0",
   "engines": {
@@ -26,14 +26,14 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "quick:test": "node --import=./tsnode.esm.js --enable-source-maps bin/test.ts",
-    "pretest": "npm run lint",
-    "test": "c8 npm run quick:test",
-    "prebuild": "npm run lint && npm run clean",
+    "pretest": "pnpm lint",
+    "test": "c8 pnpm quick:test",
+    "prebuild": "pnpm lint && pnpm clean",
     "build": "tsc",
-    "postbuild": "npm run copy:templates",
+    "postbuild": "pnpm copy:templates",
     "release": "np",
-    "version": "npm run build",
-    "prepublishOnly": "npm run build"
+    "version": "pnpm build",
+    "prepublishOnly": "pnpm build"
   },
   "keywords": [],
   "author": "",
@@ -66,7 +66,7 @@
     "tag": "latest"
   },
   "np": {
-    "message": "chore(release): %s",
+    "message": "chore(release): :rocket: %s",
     "tag": "latest",
     "branch": "main",
     "anyBranch": false
