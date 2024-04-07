@@ -1,3 +1,4 @@
+import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { Emitter } from '@adonisjs/core/events';
 import { IgnitorFactory } from '@adonisjs/core/factories';
@@ -6,6 +7,14 @@ import { type ApplicationService } from '@adonisjs/core/types';
 import { Database } from '@adonisjs/lucid/database';
 import { BaseModel } from '@adonisjs/lucid/orm';
 import { getActiveTest } from '@japa/runner';
+import defineConfig from '../src/define_config.js';
+import {
+  type PermissionModel,
+  type RoleModel,
+  type WithAuthorizable,
+  type WithPermissions,
+  type WithRoles,
+} from '../src/types.js';
 
 export const BASE_URL = new URL('tmp/', import.meta.url);
 
@@ -26,8 +35,10 @@ const assertInTestEnvironment = <T>(
   return fn({ test });
 };
 
-export const createDatabase = (app: ApplicationService): Database =>
-  assertInTestEnvironment(({ test }) => {
+export const createDatabase = (app: ApplicationService): Promise<Database> =>
+  assertInTestEnvironment(async ({ test }) => {
+    await mkdir(test.context.fs.basePath);
+
     const logger = new LoggerFactory().create();
     const emitter = new Emitter(app);
     const db = new Database(
@@ -98,8 +109,6 @@ export const createTables = (
         .inTable(permissionsTable)
         .onDelete('CASCADE');
       table.integer('model_id').unsigned().references('id').inTable(rolesTable).onDelete('CASCADE');
-      table.timestamp('created_at').notNullable();
-      table.timestamp('updated_at').nullable();
     });
 
     await db.connection().schema.createTableIfNotExists(rolesPivotTable, (table) => {
@@ -111,8 +120,6 @@ export const createTables = (
         .references('id')
         .inTable(modelsTable)
         .onDelete('CASCADE');
-      table.timestamp('created_at').notNullable();
-      table.timestamp('updated_at').nullable();
     });
 
     await db.connection().schema.createTableIfNotExists(permissionsPivotTable, (table) => {
@@ -129,28 +136,64 @@ export const createTables = (
         .references('id')
         .inTable(modelsTable)
         .onDelete('CASCADE');
-      table.timestamp('created_at').notNullable();
-      table.timestamp('updated_at').nullable();
     });
   }, 'createTables');
 
-export const setupApp = async (): Promise<{ app: ApplicationService }> => {
-  const ignitor = new IgnitorFactory()
-    .withCoreProviders()
-    .withCoreConfig()
-    .create(BASE_URL, {
-      importer: (filePath) => {
-        if (filePath.startsWith('./') || filePath.startsWith('../')) {
-          return import(new URL(filePath, BASE_URL).href);
-        }
+export const setupApp = async (
+  includeProvider = false,
+  includeConfig = false,
+): Promise<{
+  app: ApplicationService;
+}> =>
+  assertInTestEnvironment(async ({ test }) => {
+    const config = {
+      ...(includeConfig ? { permissions: defineConfig({}) } : {}),
+    };
+    const providers = includeProvider ? [() => import('../providers/permissions_provider.js')] : [];
 
-        return import(filePath);
-      },
-    });
+    const ignitor = new IgnitorFactory()
+      .merge({ rcFileContents: { providers } })
+      .withCoreProviders()
+      .withCoreConfig()
+      .merge({ config })
+      .create(BASE_URL, {
+        importer: (filePath) => {
+          if (filePath.startsWith('./') || filePath.startsWith('../')) {
+            return import(new URL(filePath, BASE_URL).href);
+          }
 
-  const app = ignitor.createApp('web');
+          return import(filePath);
+        },
+      });
 
-  await app.init().then(() => app.boot());
+    const app = ignitor.createApp('web');
 
-  return { app };
-};
+    await app.init();
+    await app.boot();
+    test.cleanup(() => app.terminate());
+
+    return { app };
+  }, 'setupApp');
+
+export const getMixins = async (): Promise<{
+  withPermissions: WithPermissions;
+  withRoles: WithRoles;
+  withAuthorizable: WithAuthorizable;
+  Role: RoleModel;
+  Permission: PermissionModel;
+}> =>
+  assertInTestEnvironment(async () => {
+    const { withPermissions } = await import('../src/mixins/with_permissions.js');
+    const { withRoles } = await import('../src/mixins/with_roles.js');
+    const { withAuthorizable } = await import('../src/mixins/with_authorizable.js');
+    const permission = await import('../services/permission.js');
+    const role = await import('../services/role.js');
+
+    return {
+      withPermissions,
+      withRoles,
+      withAuthorizable,
+      Role: role.default,
+      Permission: permission.default,
+    };
+  }, 'createMixins');
