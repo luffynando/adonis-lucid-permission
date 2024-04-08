@@ -1,7 +1,7 @@
 {
   "name": "adonis-lucid-permission",
-  "description": "",
-  "version": "0.0.0",
+  "description": "Addon for Associate models with roles and permissions AdonisJS Lucid ORM",
+  "version": "1.0.0",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -9,13 +9,16 @@
   "files": [
     "build/src",
     "build/providers",
+    "build/services",
     "build/stubs",
     "build/index.d.ts",
     "build/index.js"
   ],
   "exports": {
     ".": "./build/index.js",
-    "./types": "./build/src/types.js"
+    "./types": "./build/src/types.js",
+    "./services/*": "./build/services/*.js",
+    "./permissions_provider": "./build/providers/permissions_provider.js"
   },
   "scripts": {
     "clean": "del-cli build",
@@ -35,9 +38,21 @@
     "version": "pnpm build",
     "prepublishOnly": "pnpm build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "lucid",
+    "permissions",
+    "adonisjs"
+  ],
+  "author": "Fernando Isidro <luffynando@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/luffynando/adonis-lucid-permission#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luffynando/adonis-lucid-permission.git"
+  },
+  "bugs": {
+    "url": "https://github.com/luffynando/adonis-lucid-permission/issues"
+  },
   "devDependencies": {
     "@adonisjs/assembler": "^7.4.0",
     "@adonisjs/core": "^6.5.0",

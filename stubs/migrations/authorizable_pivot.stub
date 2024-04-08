@@ -1,0 +1,28 @@
+{{{
+  exports({
+    to: app.migrationsPath(migration.fileName)
+  })
+}}}
+import { BaseSchema } from "@adonisjs/lucid/schema"
+
+export default class extends BaseSchema {
+  protected permissionPivotTable = '{{ permissionPivotTable }}'
+  protected rolePivotTable = '{{ rolePivotTable }}'
+
+  async up() {
+    this.schema.createTable(this.permissionPivotTable, (table) => {
+      table.integer('permission_id').unsigned().references('id').inTable('{{ permissionsTable }}').onDelete('CASCADE')
+      table.integer('model_id').unsigned().references('id').inTable('{{ modelTable }}').onDelete('CASCADE')
+    })
+
+    this.schema.createTable(this.rolePivotTable, (table) => {
+      table.integer('role_id').unsigned().references('id').inTable('{{ rolesTable }}').onDelete('CASCADE')
+      table.integer('model_id').unsigned().references('id').inTable('{{ modelTable }}').onDelete('CASCADE')
+    })
+  }
+
+  async down() {
+    this.schema.dropTable(this.permissionPivotTable)
+    this.schema.dropTable(this.rolePivotTable)
+  }
+}
