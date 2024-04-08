@@ -21,7 +21,7 @@
   "exports": {
     ".": "./build/index.js",
     "./types": "./build/src/types.js",
-    "./command_pivot_table": "./build/commands/pivot_table.js",
+    "./commands": "./build/commands/main.js",
     "./services/*": "./build/services/*.js",
     "./permissions_provider": "./build/providers/permissions_provider.js"
   },
@@ -38,10 +38,12 @@
     "test": "c8 pnpm quick:test",
     "prebuild": "pnpm lint:check && pnpm clean",
     "build": "tsc",
-    "postbuild": "pnpm copy:templates",
+    "postbuild": "pnpm copy:templates && pnpm index:commands",
+    "prerelease": "pnpm prebuild && pnpm build && pnpm postbuild",
     "release": "release-it",
     "version": "pnpm build",
-    "prepublishOnly": "pnpm build"
+    "prepublishOnly": "pnpm build",
+    "index:commands": "adonis-kit index build/commands"
   },
   "keywords": [
     "lucid",

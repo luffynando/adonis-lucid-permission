@@ -68,7 +68,7 @@ const configure = async function (command: ConfigureCommand): Promise<void> {
 
   /** Publish provider */
   await codemods.updateRcFile((rcFile) => {
-    rcFile.addCommand('adonis-lucid-permission/command_pivot_table');
+    rcFile.addCommand('adonis-lucid-permission/commands');
     rcFile.addProvider('adonis-lucid-permission/permissions_provider');
   });
 
