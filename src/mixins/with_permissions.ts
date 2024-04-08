@@ -122,7 +122,7 @@ export const withPermissions: WithPermissions = (tableName: string) => {
           };
         });
 
-        return Permission.fetchOrCreateMany('name', permissionsToSearch);
+        return Permission.fetchOrCreateMany('name', permissionsToSearch, { client: this.$trx });
       }
     }
 

@@ -98,7 +98,7 @@ export const withRoles: WithRoles = (tableName: string) => {
           };
         });
 
-        return Role.fetchOrCreateMany('name', rolesToSearch);
+        return Role.fetchOrCreateMany('name', rolesToSearch, { client: this.$trx });
       }
     }
 
