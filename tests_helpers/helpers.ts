@@ -1,5 +1,6 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
+import { type Kernel } from '@adonisjs/core/ace';
 import { Emitter } from '@adonisjs/core/events';
 import { IgnitorFactory } from '@adonisjs/core/factories';
 import { LoggerFactory } from '@adonisjs/core/factories/logger';
@@ -144,6 +145,7 @@ export const setupApp = async (
   includeConfig = false,
 ): Promise<{
   app: ApplicationService;
+  ace: Kernel;
 }> =>
   assertInTestEnvironment(async ({ test }) => {
     const config = {
@@ -170,9 +172,14 @@ export const setupApp = async (
 
     await app.init();
     await app.boot();
+
+    const ace = await app.container.make('ace');
+
+    ace.ui.switchMode('raw');
+
     test.cleanup(() => app.terminate());
 
-    return { app };
+    return { app, ace };
   }, 'setupApp');
 
 export const getMixins = async (): Promise<{
