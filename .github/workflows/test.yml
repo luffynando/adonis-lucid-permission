@@ -9,52 +9,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install
-        run: npm install
+      - name: Install dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: true
       - name: Run lint
-        run: npm run lint
+        run: pnpm lint:check
 
   typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install
-        run: npm install
+      - name: Install dependencies
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: true
       - name: Run typecheck
-        run: npm run typecheck
+        run: pnpm typecheck
 
   tests:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
         node-version:
           - 20.10.0
           - 21.x
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install
-        run: npm install
-      - name: Run tests
-        run: npm test
-  windows:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        node-version:
-          - 20.10.0
-          - 21.x
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - name: Install dependencies
+        uses: pnpm/action-setup@v2
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install
-        run: npm install
+          version: 8
+          run_install: true
       - name: Run tests
-        run: npm test
+        run: pnpm test
