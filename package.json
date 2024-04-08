@@ -34,7 +34,7 @@
     "prebuild": "pnpm lint && pnpm clean",
     "build": "tsc",
     "postbuild": "pnpm copy:templates",
-    "release": "np",
+    "release": "release-it",
     "version": "pnpm build",
     "prepublishOnly": "pnpm build"
   },
@@ -58,9 +58,7 @@
     "@adonisjs/core": "^6.5.0",
     "@adonisjs/lucid": "^20.5.1",
     "@japa/assert": "^3.0.0",
-    "@japa/expect-type": "^2.0.2",
     "@japa/file-system": "^2.3.0",
-    "@japa/plugin-adonisjs": "^3.0.1",
     "@japa/runner": "^3.1.2",
     "@nodecfdi/eslint-config": "^1.6.0",
     "@nodecfdi/prettier-config": "^1.1.1",
@@ -74,8 +72,8 @@
     "eslint": "^8.57.0",
     "eslint-define-config": "^2.1.0",
     "luxon": "^3.4.4",
-    "np": "^10.0.2",
     "prettier": "^3.2.5",
+    "release-it": "^17.1.1",
     "sqlite3": "^5.1.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.4"
@@ -89,11 +87,17 @@
     "access": "public",
     "tag": "latest"
   },
-  "np": {
-    "message": "chore(release): :rocket: %s",
-    "tag": "latest",
-    "branch": "main",
-    "anyBranch": false
+  "release-it": {
+    "git": {
+      "commitMessage": "chore(release): :rocket: ${version}",
+      "tagAnnotation": "v${version}",
+      "tagName": "v${version}"
+    },
+    "github": {
+      "release": true,
+      "releaseName": "v${version}",
+      "web": true
+    }
   },
   "c8": {
     "reporter": [
