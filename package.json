@@ -6,12 +6,15 @@
     "node": ">=20.6.0"
   },
   "type": "module",
+  "main": "./build/index.js",
   "files": [
     "build/commands",
     "build/providers",
     "build/services",
     "build/src",
     "build/stubs",
+    "build/configure.d.ts",
+    "build/configure.js",
     "build/index.d.ts",
     "build/index.js"
   ],
