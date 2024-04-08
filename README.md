@@ -1,115 +1,179 @@
-# AdonisJS package starter kit
+# `adonis-lucid-permission`
 
-> A boilerplate for creating AdonisJS packages
+[![Source Code][badge-source]][source]
+[![Npm Node Version Support][badge-node-version]][node-version]
+[![Latest Version][badge-release]][release]
+[![Software License][badge-license]][license]
+[![Build Status][badge-build]][build]
+[![Total Downloads][badge-downloads]][downloads]
 
-This repo provides you with a starting point for creating AdonisJS packages. Of course, you can create a package from scratch with your folder structure and workflow. However, using this starter kit can speed up the process, as you have fewer decisions to make.
+> Library for associate adonisjs lucid ORM models with roles and permissions
 
-## Setup
+## Requisites
 
-- Clone the repo on your computer, or use `giget` to download this repo without the Git history.
-  ```sh
-  npx giget@latest gh:adonisjs/pkg-starter-kit
-  ```
-- Install dependencies.
-- Update the `package.json` file and define the `name`, `description`, `keywords`, and `author` properties.
-- The repo is configured with an MIT license. Feel free to change that if you are not publishing under the MIT license.
+Requires `@adonisjs/core >= 6.5.0` and `@adonisjs/lucid >= 20.5.1`;
 
-## Folder structure
+## Installation
 
-The starter kit mimics the folder structure of the official packages. Feel free to rename files and folders as per your requirements.
+NPM
 
-```
-├── providers
-├── src
-├── bin
-├── stubs
-├── configure.ts
-├── index.ts
-├── LICENSE.md
-├── package.json
-├── README.md
-├── tsconfig.json
-├── tsnode.esm.js
+```sh
+npm i adonis-lucid-permission
 ```
 
-- The `configure.ts` file exports the `configure` hook to configure the package using the `node ace configure` command.
-- The `index.ts` file is the main entry point of the package.
-- The `tsnode.esm.js` file runs TypeScript code using TS-Node + SWC. Please read the code comment in this file to learn more.
-- The `bin` directory contains the entry point file to run Japa tests.
-- Learn more about [the `providers` directory](./providers/README.md).
-- Learn more about [the `src` directory](./src/README.md).
-- Learn more about [the `stubs` directory](./stubs/README.md).
+YARN
 
-### File system naming convention
+```sh
+yarn add adonis-lucid-permission
+```
 
-We use `snake_case` naming conventions for the file system. The rule is enforced using ESLint. However, turn off the rule and use your preferred naming conventions.
+PNPM
 
-## Peer dependencies
+```sh
+pnpm add adonis-lucid-permission
+```
 
-The starter kit has a peer dependency on `@adonisjs/core@6`. Since you are creating a package for AdonisJS, you must make it against a specific version of the framework core.
+After install call `configure`:
 
-If your package needs Lucid to be functional, you may install `@adonisjs/lucid` as a development dependency and add it to the list of `peerDependencies`.
+```sh
+node ace configure adonis-lucid-permission
+```
 
-As a rule of thumb, packages installed in the user application should be part of the `peerDependencies` of your package and not the main dependency.
+## Usage
 
-For example, if you install `@adonisjs/core` as a main dependency, then essentially, you are importing a separate copy of `@adonisjs/core` and not sharing the one from the user application. Here is a great article explaining [peer dependencies](https://blog.bitsrc.io/understanding-peer-dependencies-in-javascript-dbdb4ab5a7be).
+After install and configure, apply HasAuthorizable to a Model
 
-## Published files
+```ts
+import { compose } from '@adonisjs/core/helpers';
+import { BaseModel } from '@adonisjs/lucid/orm';
+import { withAuthorizable } from 'adonis-lucid-permission';
 
-Instead of publishing your repo's source code to npm, you must cherry-pick files and folders to publish only the required files.
+const HasAuthorizable = withAuthorizable({
+  rolesPivotTable: 'user_has_roles',
+  permissionsPivotTable: 'user_has_permissions',
+});
 
-The cherry-picking uses the `files` property inside the `package.json` file. By default, we publish the following files and folders.
-
-```json
-{
-  "files": ["build/src", "build/providers", "build/stubs", "build/index.d.ts", "build/index.js"]
+export default class User extends compose(BaseModel, HasAuthorizable) {
+  // ...columns and props
 }
 ```
 
-If you create additional folders or files, mention them inside the `files` array.
+And create the pivot-table migration file with:
 
-## Exports
-
-[Node.js Subpath exports](https://nodejs.org/api/packages.html#subpath-exports) allows you to define the exports of your package regardless of the folder structure. This starter kit defines the following exports.
-
-```json
-{
-  "exports": {
-    ".": "./build/index.js",
-    "./types": "./build/src/types.js"
-  }
-}
+```sh
+node ace permissions:pivot-table
 ```
 
-- The dot `.` export is the main export.
-- The `./types` exports all the types defined inside the `./build/src/types.js` file (the compiled output).
+And ready. User model can all methods for associate roles and permissions
 
-Feel free to change the exports as per your requirements.
+### Role and Permission model
 
-## Testing
+Roles and Permissions are just Lucid models that can be directly managed like any other model
 
-We configure the [Japa test runner](https://japa.dev/) with this starter kit. Japa is used in AdonisJS applications as well. Just run one of the following commands to execute tests.
+```ts
+import { Permission } from 'adonis-lucid-permission/services/permission';
+import { Role } from 'adonis-lucid-permission/services/role';
 
-- `npm run test`: This command will first lint the code using ESlint and then run tests and report the test coverage using [c8](https://github.com/bcoe/c8).
-- `npm run quick:test`: Runs only the tests without linting or coverage reporting.
+const role = await Role.create({ name: 'writer' });
+const permission = await Permission.create({ name: 'edit-posts' });
+```
 
-The starter kit also has a Github workflow file to run tests using Github Actions. The tests are executed against `Node.js 20.x` and `Node.js 21.x` versions on both Linux and Windows. Feel free to edit the workflow file in the `.github/workflows` directory.
+### Managing permissions
 
-## TypeScript workflow
+You can manage permissions for roles and models using the same methods
 
-- The starter kit uses [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html) for compiling the TypeScript to JavaScript when publishing the package.
-- [TS-Node](https://typestrong.org/ts-node/) and [SWC](https://swc.rs/) are used to run tests without compiling the source code.
-- The `tsconfig.json` file is extended from [`@adonisjs/tsconfig`](https://github.com/adonisjs/tooling-config/tree/main/packages/typescript-config) and uses the `NodeNext` module system. Meaning the packages are written using ES modules.
-- You can perform type checking without compiling the source code using the `npm run type check` script.
+```typescript
+// Assigning permissions
+await role.givePermissionTo('do-things');
 
-Feel free to explore the `tsconfig.json` file for all the configured options.
+// Removing permissions
+await user.revokePermissionTo('do-things');
 
-## ESLint and Prettier setup
+// Synchronize permissions
+await role.syncPermissions('do-things', 'try-things');
+```
 
-The starter kit configures ESLint and Prettier. Both configurations are stored within the `package.json` file and use our [shared config](https://github.com/adonisjs/tooling-config/tree/main/packages). Feel free to change the configuration, use custom plugins, or remove both tools altogether.
+### Checking for permissions
 
-## Using Stale bot
+```typescript
+// Checking permissions
+await role.hasPermissionTo('do-things'); // returns true or false
+await user.checkPermissionTo('do-things'); // returns true or throws
 
-The [Stale bot](https://github.com/apps/stale) is a Github application that automatically marks issues and PRs as stale and closes after a specific duration of inactivity.
+// Returns true if the model has any of the given permissions
+await role.hasAnyPermission('do-things', 'try-things');
 
-Feel free to delete the `.github/stale.yml` and `.github/lock.yml` files if you decide not to use the Stale bot.
+// Returns true if the model has all of the given permissions
+await user.hasAllPermissions('do-things', 'try-things');
+
+// Returns all permission names
+await user.getPermissionNames();
+```
+
+### Managing Roles
+
+You can manage roles for models using the `withAuthorizable` mixin
+
+```typescript
+// Assign role
+await user.assignRole('admin');
+
+// Revoke role
+await user.revokeRole('admin');
+
+// Synchronize roles
+await user.syncRoles('admin', 'writer', role);
+```
+
+### Checking for roles
+
+Generally you should be checking against permissions vs checking for roles, but if you want to check against a role instead use one of the following methods
+
+```typescript
+await user.hasRole('admin');
+
+// Returns true if the model has any of the given permissions
+await role.hasAnyRoles('admin', 'writer');
+
+// Returns true if the model has all of the given permissions
+await user.hasAllRoles('admin', 'writer');
+
+// Returns all role names
+await user.getRoleNames();
+```
+
+### Accessing direct and role permissions
+
+```typescript
+// Check if the model has the permission directly
+await user.hasDirectPermission('do-things');
+
+// Check if the model has the permission via role
+await user.hasPermissionViaRole('do-things');
+
+// Get all direct permissions
+await user.getDirectPermissions();
+
+// Get all permissions via roles
+await user.getPermissionsViaRoles();
+
+// Get all permissions combined
+await user.getAllPermissions();
+```
+
+## Copyright and License
+
+The `adonis-lucid-permission` library is licensed for use under the MIT License (MIT). Please see [LICENSE][] for more information.
+
+[source]: https://github.com/luffynando/adonis-lucid-permission
+[node-version]: https://www.npmjs.com/package/adonis-lucid-permission
+[release]: https://www.npmjs.com/package/adonis-lucid-permission
+[license]: https://github.com/luffynando/adonis-lucid-permission/blob/main/LICENSE.md
+[build]: https://github.com/luffynando/adonis-lucid-permission/actions/workflows/test.yml?query=branch:main
+[downloads]: https://www.npmjs.com/package/adonis-lucid-permission
+[badge-source]: https://img.shields.io/badge/source-adonis-lucid-permission-blue.svg?logo=github
+[badge-node-version]: https://img.shields.io/node/v/adonis-lucid-permission.svg?logo=nodedotjs
+[badge-release]: https://img.shields.io/npm/v/adonis-lucid-permission.svg?logo=npm
+[badge-license]: https://img.shields.io/github/license/luffynando/adonis-lucid-permission.svg?logo=open-source-initiative
+[badge-build]: https://img.shields.io/github/actions/workflow/status/luffynando/adonis-lucid-permission/test.yml?branch=main
+[badge-downloads]: https://img.shields.io/npm/dm/adonis-lucid-permission.svg?logo=npm
