@@ -6,10 +6,8 @@ test.group('service provider', () => {
   test('resolve permission service shortcout import', async ({ assert }) => {
     await setupApp(true, true);
 
-    const PermissionModel = await import('../services/permission.js');
-    const RoleModel = await import('../services/role.js');
-    const Permission = PermissionModel.default;
-    const Role = RoleModel.default;
+    const { Permission } = await import('../services/permission.js');
+    const { Role } = await import('../services/role.js');
 
     assert.instanceOf(new Permission(), BaseModel);
     assert.instanceOf(new Role(), BaseModel);

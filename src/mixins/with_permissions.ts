@@ -1,6 +1,6 @@
 import { manyToMany } from '@adonisjs/lucid/orm';
 import { type ManyToMany } from '@adonisjs/lucid/types/relations';
-import Permission from '../../services/permission.js';
+import { Permission } from '../../services/permission.js';
 import {
   type HasPermissionsModel,
   type MixinModelWithPermission,

@@ -186,14 +186,14 @@ export const getMixins = async (): Promise<{
     const { withPermissions } = await import('../src/mixins/with_permissions.js');
     const { withRoles } = await import('../src/mixins/with_roles.js');
     const { withAuthorizable } = await import('../src/mixins/with_authorizable.js');
-    const permission = await import('../services/permission.js');
-    const role = await import('../services/role.js');
+    const { Permission } = await import('../services/permission.js');
+    const { Role } = await import('../services/role.js');
 
     return {
       withPermissions,
       withRoles,
       withAuthorizable,
-      Role: role.default,
-      Permission: permission.default,
+      Role,
+      Permission,
     };
   }, 'createMixins');

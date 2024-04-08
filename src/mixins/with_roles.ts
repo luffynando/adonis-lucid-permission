@@ -1,6 +1,6 @@
 import { manyToMany } from '@adonisjs/lucid/orm';
 import { type ManyToMany } from '@adonisjs/lucid/types/relations';
-import Role from '../../services/role.js';
+import { Role } from '../../services/role.js';
 import {
   type HasRolesModel,
   type MixinModelWithRole,
