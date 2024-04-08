@@ -171,9 +171,9 @@ The `adonis-lucid-permission` library is licensed for use under the MIT License 
 [license]: https://github.com/luffynando/adonis-lucid-permission/blob/main/LICENSE.md
 [build]: https://github.com/luffynando/adonis-lucid-permission/actions/workflows/test.yml?query=branch:main
 [downloads]: https://www.npmjs.com/package/adonis-lucid-permission
-[badge-source]: https://img.shields.io/badge/source-adonis-lucid-permission-blue.svg?logo=github
+[badge-source]: https://img.shields.io/badge/source-adonis--lucid--permission-blue.svg?logo=github
 [badge-node-version]: https://img.shields.io/node/v/adonis-lucid-permission.svg?logo=nodedotjs
 [badge-release]: https://img.shields.io/npm/v/adonis-lucid-permission.svg?logo=npm
-[badge-license]: https://img.shields.io/github/license/luffynando/adonis-lucid-permission.svg?logo=open-source-initiative
+[badge-license]: https://img.shields.io/github/license/luffynando/adonis-lucid-permission?logo=open-source-initiative
 [badge-build]: https://img.shields.io/github/actions/workflow/status/luffynando/adonis-lucid-permission/test.yml?branch=main
 [badge-downloads]: https://img.shields.io/npm/dm/adonis-lucid-permission.svg?logo=npm
