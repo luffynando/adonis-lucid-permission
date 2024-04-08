@@ -7,9 +7,10 @@
   },
   "type": "module",
   "files": [
-    "build/src",
+    "build/commands",
     "build/providers",
     "build/services",
+    "build/src",
     "build/stubs",
     "build/index.d.ts",
     "build/index.js"
@@ -17,6 +18,7 @@
   "exports": {
     ".": "./build/index.js",
     "./types": "./build/src/types.js",
+    "./command_pivot_table": "./build/commands/pivot_table.js",
     "./services/*": "./build/services/*.js",
     "./permissions_provider": "./build/providers/permissions_provider.js"
   },
