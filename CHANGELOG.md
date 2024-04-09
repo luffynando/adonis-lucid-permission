@@ -1,5 +1,19 @@
 # adonis-lucid-permission ChangeLog
 
+## 1.0.5
+
+### Minor Changes - Types for Result mixins
+
+- Fix types for result mixins and models services
+- Add test for check mixins dont overlap other mixins
+
+## 1.0.4
+
+### Minor Changes - Transactions
+
+- Include transaction client if exists in parent model
+- Add changelog
+
 ## 1.0.3
 
 ### Minor Changes - Fix command export
