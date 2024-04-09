@@ -1,21 +1,29 @@
 import { compose } from '@adonisjs/core/helpers';
+import { type NormalizeConstructor } from '@adonisjs/core/types/helpers';
+import { type BaseModel } from '@adonisjs/lucid/orm';
 import {
-  type HasAuthorizableModel,
+  type AuthorizableConfig,
+  type HasAuthorizableMethods,
   type MixinModelWithAuthorizable,
+  type MixinWithAuthorizable,
   type PermissionModel,
-  type WithAuthorizable,
 } from '../types.js';
 import { withPermissions } from './with_permissions.js';
 import { withRoles } from './with_roles.js';
 
-export const withAuthorizable: WithAuthorizable = (config) => {
+export const withAuthorizable = (config: AuthorizableConfig) => {
   const HasPermissions = withPermissions(config.permissionsPivotTable);
   const HasRoles = withRoles(config.rolesPivotTable);
 
-  return (superclass): MixinModelWithAuthorizable<typeof superclass> => {
-    class ModelWithAuthorizable extends compose(superclass, HasRoles, HasPermissions) {
+  return <Model extends NormalizeConstructor<typeof BaseModel>>(
+    superclass: Model,
+  ): NormalizeConstructor<MixinModelWithAuthorizable> & Model => {
+    class ModelWithAuthorizable
+      extends compose(superclass, HasRoles, HasPermissions)
+      implements HasAuthorizableMethods
+    {
       public async hasDirectPermission(
-        this: ModelWithAuthorizable & HasAuthorizableModel,
+        this: MixinWithAuthorizable,
         permission: string | InstanceType<PermissionModel>,
       ): Promise<boolean> {
         const permissionTarget = this.getPermissionTarget(permission);
@@ -28,7 +36,7 @@ export const withAuthorizable: WithAuthorizable = (config) => {
       }
 
       public async hasPermissionViaRole(
-        this: ModelWithAuthorizable & HasAuthorizableModel,
+        this: MixinWithAuthorizable,
         permission: string | InstanceType<PermissionModel>,
       ): Promise<boolean> {
         const permissionTarget = this.getPermissionTarget(permission);
@@ -44,7 +52,7 @@ export const withAuthorizable: WithAuthorizable = (config) => {
       }
 
       public async getDirectPermissions(
-        this: ModelWithAuthorizable & HasAuthorizableModel,
+        this: MixinWithAuthorizable,
       ): Promise<InstanceType<PermissionModel>[]> {
         await this.load('permissions');
 
@@ -52,7 +60,7 @@ export const withAuthorizable: WithAuthorizable = (config) => {
       }
 
       public async getPermissionsViaRoles(
-        this: ModelWithAuthorizable & HasAuthorizableModel,
+        this: MixinWithAuthorizable,
       ): Promise<InstanceType<PermissionModel>[]> {
         await this.load('roles', (query) => {
           void query.preload('permissions');
@@ -62,7 +70,7 @@ export const withAuthorizable: WithAuthorizable = (config) => {
       }
 
       public async getAllPermissions(
-        this: ModelWithAuthorizable & HasAuthorizableModel,
+        this: MixinWithAuthorizable,
       ): Promise<InstanceType<PermissionModel>[]> {
         await this.load((loader) => {
           loader.load('permissions').load('roles', (query) => {
@@ -74,6 +82,6 @@ export const withAuthorizable: WithAuthorizable = (config) => {
       }
     }
 
-    return ModelWithAuthorizable as unknown as MixinModelWithAuthorizable<typeof superclass>;
+    return ModelWithAuthorizable;
   };
 };

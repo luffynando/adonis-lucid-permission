@@ -1,16 +1,18 @@
-import { manyToMany } from '@adonisjs/lucid/orm';
+import { type NormalizeConstructor } from '@adonisjs/core/types/helpers';
+import { type BaseModel, manyToMany } from '@adonisjs/lucid/orm';
 import { type ManyToMany } from '@adonisjs/lucid/types/relations';
 import { Permission } from '../../services/permission.js';
 import {
-  type HasPermissionsModel,
-  type MixinModelWithPermission,
+  type MixinModelWithPermissions,
+  type MixinWithPermissions,
   type PermissionModel,
-  type WithPermissions,
 } from '../types.js';
 
-export const withPermissions: WithPermissions = (tableName: string) => {
-  return (superclass): MixinModelWithPermission<typeof superclass> => {
-    class ModelWithPermission extends superclass {
+export const withPermissions = (tableName: string) => {
+  return <Model extends NormalizeConstructor<typeof BaseModel>>(
+    superclass: Model,
+  ): NormalizeConstructor<MixinModelWithPermissions> & Model => {
+    class ModelWithPermission extends superclass implements MixinWithPermissions {
       @manyToMany(() => Permission, {
         pivotTable: tableName,
         pivotForeignKey: 'model_id',
@@ -19,7 +21,7 @@ export const withPermissions: WithPermissions = (tableName: string) => {
       public declare permissions: ManyToMany<typeof Permission>;
 
       public async hasPermissionTo(
-        this: ModelWithPermission & HasPermissionsModel,
+        this: ModelWithPermission,
         permission: string | InstanceType<PermissionModel>,
       ): Promise<boolean> {
         const permissionTarget = this.getPermissionTarget(permission);
@@ -32,7 +34,7 @@ export const withPermissions: WithPermissions = (tableName: string) => {
       }
 
       public async checkPermissionTo(
-        this: ModelWithPermission & HasPermissionsModel,
+        this: ModelWithPermission,
         permission: string | InstanceType<PermissionModel>,
       ): Promise<boolean> {
         if (await this.hasPermissionTo(permission)) {
@@ -45,7 +47,7 @@ export const withPermissions: WithPermissions = (tableName: string) => {
       }
 
       public async hasAnyPermission(
-        this: ModelWithPermission & HasPermissionsModel,
+        this: ModelWithPermission,
         ...permissions: (InstanceType<PermissionModel> | string)[]
       ): Promise<boolean> {
         await this.load('permissions');
@@ -59,7 +61,7 @@ export const withPermissions: WithPermissions = (tableName: string) => {
       }
 
       public async hasAllPermissions(
-        this: ModelWithPermission & HasPermissionsModel,
+        this: ModelWithPermission,
         ...permissions: (InstanceType<PermissionModel> | string)[]
       ): Promise<boolean> {
         await this.load('permissions');
@@ -74,7 +76,7 @@ export const withPermissions: WithPermissions = (tableName: string) => {
       }
 
       public async givePermissionTo(
-        this: ModelWithPermission & HasPermissionsModel,
+        this: ModelWithPermission,
         ...permissions: (InstanceType<PermissionModel> | string)[]
       ): Promise<void> {
         const permissionModels = await this.getPermissionsOrCreate(...permissions);
@@ -83,7 +85,7 @@ export const withPermissions: WithPermissions = (tableName: string) => {
       }
 
       public async syncPermissions(
-        this: ModelWithPermission & HasPermissionsModel,
+        this: ModelWithPermission,
         ...permissions: (InstanceType<PermissionModel> | string)[]
       ): Promise<void> {
         const permissionModels = await this.getPermissionsOrCreate(...permissions);
@@ -92,7 +94,7 @@ export const withPermissions: WithPermissions = (tableName: string) => {
       }
 
       public async revokePermissionTo(
-        this: ModelWithPermission & HasPermissionsModel,
+        this: ModelWithPermission,
         permission: string | InstanceType<PermissionModel>,
       ): Promise<void> {
         const permissionModels = await this.getPermissionsOrCreate(permission);
@@ -100,20 +102,21 @@ export const withPermissions: WithPermissions = (tableName: string) => {
         await this.related('permissions').detach(permissionModels.map((perm) => perm.id));
       }
 
-      public async getPermissionNames(
-        this: ModelWithPermission & HasPermissionsModel,
-      ): Promise<string[]> {
+      public async getPermissionNames(this: ModelWithPermission): Promise<string[]> {
         const permissions = await this.related('permissions').query().select('name');
 
         return permissions.map((p) => p.name);
       }
 
-      public getPermissionTarget(permission: string | InstanceType<PermissionModel>): string {
+      public getPermissionTarget(
+        this: ModelWithPermission,
+        permission: string | InstanceType<PermissionModel>,
+      ): string {
         return typeof permission === 'string' ? permission : permission.name;
       }
 
       private async getPermissionsOrCreate(
-        this: ModelWithPermission & HasPermissionsModel,
+        this: ModelWithPermission,
         ...permissions: (InstanceType<PermissionModel> | string)[]
       ): Promise<InstanceType<PermissionModel>[]> {
         const permissionsToSearch = permissions.map((permission) => {
@@ -126,6 +129,6 @@ export const withPermissions: WithPermissions = (tableName: string) => {
       }
     }
 
-    return ModelWithPermission as unknown as MixinModelWithPermission<typeof superclass>;
+    return ModelWithPermission;
   };
 };

@@ -2,29 +2,18 @@ import { type NormalizeConstructor } from '@adonisjs/core/types/helpers';
 import { type LucidModel, type LucidRow } from '@adonisjs/lucid/types/model';
 import { type ManyToMany } from '@adonisjs/lucid/types/relations';
 
+export type NoConstructor<T> = Omit<T, 'constructor'>;
+
 export interface PermissionPropertiesModel extends LucidRow {
   id: string | number;
   name: string;
-}
-
-export interface PermissionModel extends Omit<LucidModel, 'constructor'> {
-  new (): PermissionPropertiesModel;
-}
-
-export interface RolePropertiesModel extends LucidRow {
-  id: string | number;
-  name: string;
-}
-
-export interface RoleModel extends Omit<LucidModel, 'constructor'> {
-  new (): RolePropertiesModel & HasPermissionsModel;
 }
 
 export interface HasPermissionsProperties extends LucidRow {
   permissions: ManyToMany<PermissionModel>;
 }
 
-export interface HasPermissionsModel extends HasPermissionsProperties {
+export interface HasPermissionsMethods {
   hasPermissionTo: (permission: InstanceType<PermissionModel> | string) => Promise<boolean>;
   checkPermissionTo: (permission: InstanceType<PermissionModel> | string) => Promise<boolean>;
   hasAnyPermission: (
@@ -40,22 +29,22 @@ export interface HasPermissionsModel extends HasPermissionsProperties {
   getPermissionTarget: (permission: string | InstanceType<PermissionModel>) => string;
 }
 
-export interface MixinModelWithPermission<Model extends NormalizeConstructor<LucidModel>>
-  extends Omit<LucidModel, 'constructor'> {
-  new (): Model & HasPermissionsModel;
+export interface PermissionModel extends NoConstructor<LucidModel> {
+  new (...args: unknown[]): PermissionPropertiesModel;
 }
 
-export type WithPermissions = (
-  tableName: string,
-) => <Model extends NormalizeConstructor<LucidModel>>(
-  superclass: Model,
-) => MixinModelWithPermission<Model>;
+export interface MixinWithPermissions extends HasPermissionsMethods, HasPermissionsProperties {}
+
+export interface RolePropertiesModel extends LucidRow {
+  id: string | number;
+  name: string;
+}
 
 export interface HasRolesProperties extends LucidRow {
   roles: ManyToMany<RoleModel>;
 }
 
-export interface HasRolesModel extends HasRolesProperties {
+export interface HasRolesMethods {
   assignRole: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<void>;
   syncRoles: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<void>;
   revokeRole: (role: InstanceType<RoleModel> | string) => Promise<void>;
@@ -65,18 +54,13 @@ export interface HasRolesModel extends HasRolesProperties {
   getRoleNames: () => Promise<string[]>;
 }
 
-export interface MixinModelWithRole<Model extends NormalizeConstructor<LucidModel>>
-  extends Omit<LucidModel, 'constructor'> {
-  new (): Model & HasRolesModel;
+export interface RoleModel extends NoConstructor<LucidModel> {
+  new (...args: unknown[]): RolePropertiesModel & MixinWithPermissions;
 }
 
-export type WithRoles = (
-  tableName: string,
-) => <Model extends NormalizeConstructor<LucidModel>>(
-  superclass: Model,
-) => MixinModelWithRole<Model>;
+export interface MixinWithRoles extends HasRolesMethods, HasRolesProperties {}
 
-export interface HasAuthorizableModel extends HasRolesModel, HasPermissionsModel {
+export interface HasAuthorizableMethods {
   hasDirectPermission: (permission: InstanceType<PermissionModel> | string) => Promise<boolean>;
   hasPermissionViaRole: (permission: InstanceType<PermissionModel> | string) => Promise<boolean>;
   getDirectPermissions: () => Promise<InstanceType<PermissionModel>[]>;
@@ -84,16 +68,40 @@ export interface HasAuthorizableModel extends HasRolesModel, HasPermissionsModel
   getAllPermissions: () => Promise<InstanceType<PermissionModel>[]>;
 }
 
-export interface MixinModelWithAuthorizable<Model extends NormalizeConstructor<LucidModel>>
-  extends Omit<LucidModel, 'constructor'> {
-  new (): Model & HasAuthorizableModel;
+export interface MixinWithAuthorizable
+  extends HasAuthorizableMethods,
+    MixinWithRoles,
+    MixinWithPermissions {}
+
+export interface MixinModelWithPermissions extends NoConstructor<LucidModel> {
+  new (...args: unknown[]): MixinWithPermissions;
 }
+
+export interface MixinModelWithRoles extends NoConstructor<LucidModel> {
+  new (...args: unknown[]): MixinWithRoles;
+}
+
+export interface MixinModelWithAuthorizable extends NoConstructor<LucidModel> {
+  new (...args: unknown[]): MixinWithAuthorizable;
+}
+
+export type WithPermissions = (
+  tableName: string,
+) => <Model extends NormalizeConstructor<LucidModel>>(
+  superclass: Model,
+) => NormalizeConstructor<MixinModelWithPermissions> & Model;
+
+export type WithRoles = (
+  tableName: string,
+) => <Model extends NormalizeConstructor<LucidModel>>(
+  superclass: Model,
+) => NormalizeConstructor<MixinModelWithRoles> & Model;
 
 export type WithAuthorizable = (
   config: AuthorizableConfig,
 ) => <Model extends NormalizeConstructor<LucidModel>>(
   superclass: Model,
-) => MixinModelWithAuthorizable<Model>;
+) => NormalizeConstructor<MixinModelWithAuthorizable> & Model;
 
 export interface AuthorizableConfig {
   permissionsPivotTable: string;
