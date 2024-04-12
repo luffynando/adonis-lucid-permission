@@ -1,7 +1,7 @@
 {
   "name": "adonis-lucid-permission",
   "description": "Addon for Associate models with roles and permissions AdonisJS Lucid ORM",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "engines": {
     "node": ">=20.6.0"
   },
