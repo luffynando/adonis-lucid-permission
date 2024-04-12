@@ -54,7 +54,7 @@ export const withRoles = (tableName: string) => {
         return Boolean(roleModel);
       }
 
-      public async hasAnyRoles(
+      public async hasAnyRole(
         this: ModelWithRoles,
         ...roles: (InstanceType<RoleModel> | string)[]
       ): Promise<boolean> {

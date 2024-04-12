@@ -49,7 +49,7 @@ export interface HasRolesMethods {
   syncRoles: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<void>;
   revokeRole: (role: InstanceType<RoleModel> | string) => Promise<void>;
   hasRole: (role: InstanceType<RoleModel> | string) => Promise<boolean>;
-  hasAnyRoles: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<boolean>;
+  hasAnyRole: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<boolean>;
   hasAllRoles: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<boolean>;
   getRoleNames: () => Promise<string[]>;
 }

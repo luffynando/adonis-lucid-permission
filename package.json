@@ -23,7 +23,10 @@
     "./types": "./build/src/types.js",
     "./commands": "./build/commands/main.js",
     "./services/*": "./build/services/*.js",
-    "./permissions_provider": "./build/providers/permissions_provider.js"
+    "./permissions_provider": "./build/providers/permissions_provider.js",
+    "./permission_middleware": "./build/src/middleware/permission_middleware.js",
+    "./role_middleware": "./build/src/middleware/role_middleware.js",
+    "./role_or_permission_middleware": "./build/src/middleware/role_or_permission_middleware.js"
   },
   "scripts": {
     "clean": "del-cli build",
@@ -62,17 +65,19 @@
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.4.0",
+    "@adonisjs/auth": "^9.2.0",
     "@adonisjs/core": "^6.5.0",
+    "@adonisjs/i18n": "^2.0.1",
     "@adonisjs/lucid": "^20.5.1",
     "@japa/assert": "^3.0.0",
     "@japa/file-system": "^2.3.0",
     "@japa/runner": "^3.1.2",
-    "@nodecfdi/eslint-config": "^1.6.0",
+    "@nodecfdi/eslint-config": "^1.6.2",
     "@nodecfdi/prettier-config": "^1.1.1",
     "@nodecfdi/tsconfig": "^1.4.0",
-    "@swc/core": "^1.4.12",
+    "@swc/core": "^1.4.13",
     "@types/luxon": "^3.4.2",
-    "@types/node": "^20.12.5",
+    "@types/node": "^20.12.7",
     "c8": "^9.1.0",
     "copyfiles": "^2.4.1",
     "del-cli": "^5.1.0",
@@ -83,7 +88,7 @@
     "release-it": "^17.1.1",
     "sqlite3": "^5.1.7",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.4"
+    "typescript": "^5.4.5"
   },
   "peerDependencies": {
     "@adonisjs/core": "^6.5.0",
