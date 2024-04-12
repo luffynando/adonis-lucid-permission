@@ -22,7 +22,7 @@ test.group('with roles', () => {
     assert.isFunction(Model.prototype.syncRoles);
     assert.isFunction(Model.prototype.revokeRole);
     assert.isFunction(Model.prototype.hasRole);
-    assert.isFunction(Model.prototype.hasAnyRoles);
+    assert.isFunction(Model.prototype.hasAnyRole);
     assert.isFunction(Model.prototype.hasAllRoles);
     assert.isFunction(Model.prototype.getRoleNames);
   });
@@ -103,8 +103,8 @@ test.group('with roles', () => {
 
     await model.assignRole('role-1');
 
-    assert.isTrue(await model.hasAnyRoles('role-1', role));
-    assert.isFalse(await model.hasAnyRoles(role, 'role-2'));
+    assert.isTrue(await model.hasAnyRole('role-1', role));
+    assert.isFalse(await model.hasAnyRole(role, 'role-2'));
   });
 
   test('can check if a model has all of the given roles', async ({ assert }) => {

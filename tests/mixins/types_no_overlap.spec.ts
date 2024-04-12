@@ -40,7 +40,7 @@ test.group('types no overlap', () => {
     assert.isFunction(Model.prototype.syncRoles);
     assert.isFunction(Model.prototype.revokeRole);
     assert.isFunction(Model.prototype.hasRole);
-    assert.isFunction(Model.prototype.hasAnyRoles);
+    assert.isFunction(Model.prototype.hasAnyRole);
     assert.isFunction(Model.prototype.hasAllRoles);
     assert.isFunction(Model.prototype.getRoleNames);
   });
