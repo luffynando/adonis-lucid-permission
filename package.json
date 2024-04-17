@@ -42,7 +42,6 @@
     "prebuild": "pnpm lint:check && pnpm clean",
     "build": "tsc",
     "postbuild": "pnpm copy:templates && pnpm index:commands",
-    "prerelease": "pnpm prebuild && pnpm build && pnpm postbuild",
     "release": "release-it",
     "version": "pnpm build",
     "prepublishOnly": "pnpm build",
