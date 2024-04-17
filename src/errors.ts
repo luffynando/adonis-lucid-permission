@@ -78,7 +78,7 @@ export const E_PERMISSION_UNAUTHORIZED_ACCESS = class extends Exception {
       case 'html':
       case null: {
         if ('session' in ctx) {
-          (ctx.session as { flashErrors: (errors: Record<string, unknown>) => void }).flashErrors({
+          (ctx.session as { flashErrors(errors: Record<string, unknown>): void }).flashErrors({
             [error.code!]: message,
           });
           ctx.response.redirect('back', true);
