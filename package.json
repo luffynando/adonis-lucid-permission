@@ -1,7 +1,7 @@
 {
   "name": "adonis-lucid-permission",
   "description": "Addon for Associate models with roles and permissions AdonisJS Lucid ORM",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -42,7 +42,6 @@
     "prebuild": "pnpm lint:check && pnpm clean",
     "build": "tsc",
     "postbuild": "pnpm copy:templates && pnpm index:commands",
-    "prerelease": "pnpm prebuild && pnpm build && pnpm postbuild",
     "release": "release-it",
     "version": "pnpm build",
     "prepublishOnly": "pnpm build",
@@ -64,18 +63,18 @@
     "url": "https://github.com/luffynando/adonis-lucid-permission/issues"
   },
   "devDependencies": {
-    "@adonisjs/assembler": "^7.4.0",
+    "@adonisjs/assembler": "^7.5.0",
     "@adonisjs/auth": "^9.2.0",
-    "@adonisjs/core": "^6.5.0",
-    "@adonisjs/i18n": "^2.0.1",
+    "@adonisjs/core": "^6.7.1",
+    "@adonisjs/i18n": "^2.1.0",
     "@adonisjs/lucid": "^20.5.1",
     "@japa/assert": "^3.0.0",
     "@japa/file-system": "^2.3.0",
-    "@japa/runner": "^3.1.2",
-    "@nodecfdi/eslint-config": "^1.6.2",
+    "@japa/runner": "^3.1.4",
+    "@nodecfdi/eslint-config": "^1.6.3",
     "@nodecfdi/prettier-config": "^1.1.1",
-    "@nodecfdi/tsconfig": "^1.4.0",
-    "@swc/core": "^1.4.13",
+    "@nodecfdi/tsconfig": "^1.5.0",
+    "@swc/core": "^1.4.14",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.12.7",
     "c8": "^9.1.0",
@@ -85,7 +84,7 @@
     "eslint-define-config": "^2.1.0",
     "luxon": "^3.4.4",
     "prettier": "^3.2.5",
-    "release-it": "^17.1.1",
+    "release-it": "^17.2.0",
     "sqlite3": "^5.1.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"

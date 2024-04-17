@@ -14,19 +14,15 @@ export interface HasPermissionsProperties extends LucidRow {
 }
 
 export interface HasPermissionsMethods {
-  hasPermissionTo: (permission: InstanceType<PermissionModel> | string) => Promise<boolean>;
-  checkPermissionTo: (permission: InstanceType<PermissionModel> | string) => Promise<boolean>;
-  hasAnyPermission: (
-    ...permissions: (InstanceType<PermissionModel> | string)[]
-  ) => Promise<boolean>;
-  hasAllPermissions: (
-    ...permissions: (InstanceType<PermissionModel> | string)[]
-  ) => Promise<boolean>;
-  givePermissionTo: (...permissions: (InstanceType<PermissionModel> | string)[]) => Promise<void>;
-  syncPermissions: (...permissions: (InstanceType<PermissionModel> | string)[]) => Promise<void>;
-  revokePermissionTo: (permission: InstanceType<PermissionModel> | string) => Promise<void>;
-  getPermissionNames: () => Promise<string[]>;
-  getPermissionTarget: (permission: string | InstanceType<PermissionModel>) => string;
+  hasPermissionTo(permission: InstanceType<PermissionModel> | string): Promise<boolean>;
+  checkPermissionTo(permission: InstanceType<PermissionModel> | string): Promise<boolean>;
+  hasAnyPermission(...permissions: (InstanceType<PermissionModel> | string)[]): Promise<boolean>;
+  hasAllPermissions(...permissions: (InstanceType<PermissionModel> | string)[]): Promise<boolean>;
+  givePermissionTo(...permissions: (InstanceType<PermissionModel> | string)[]): Promise<void>;
+  syncPermissions(...permissions: (InstanceType<PermissionModel> | string)[]): Promise<void>;
+  revokePermissionTo(permission: InstanceType<PermissionModel> | string): Promise<void>;
+  getPermissionNames(): Promise<string[]>;
+  getPermissionTarget(permission: string | InstanceType<PermissionModel>): string;
 }
 
 export interface PermissionModel extends NoConstructor<LucidModel> {
@@ -45,13 +41,13 @@ export interface HasRolesProperties extends LucidRow {
 }
 
 export interface HasRolesMethods {
-  assignRole: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<void>;
-  syncRoles: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<void>;
-  revokeRole: (role: InstanceType<RoleModel> | string) => Promise<void>;
-  hasRole: (role: InstanceType<RoleModel> | string) => Promise<boolean>;
-  hasAnyRole: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<boolean>;
-  hasAllRoles: (...roles: (InstanceType<RoleModel> | string)[]) => Promise<boolean>;
-  getRoleNames: () => Promise<string[]>;
+  assignRole(...roles: (InstanceType<RoleModel> | string)[]): Promise<void>;
+  syncRoles(...roles: (InstanceType<RoleModel> | string)[]): Promise<void>;
+  revokeRole(role: InstanceType<RoleModel> | string): Promise<void>;
+  hasRole(role: InstanceType<RoleModel> | string): Promise<boolean>;
+  hasAnyRole(...roles: (InstanceType<RoleModel> | string)[]): Promise<boolean>;
+  hasAllRoles(...roles: (InstanceType<RoleModel> | string)[]): Promise<boolean>;
+  getRoleNames(): Promise<string[]>;
 }
 
 export interface RoleModel extends NoConstructor<LucidModel> {
@@ -61,11 +57,11 @@ export interface RoleModel extends NoConstructor<LucidModel> {
 export interface MixinWithRoles extends HasRolesMethods, HasRolesProperties {}
 
 export interface HasAuthorizableMethods {
-  hasDirectPermission: (permission: InstanceType<PermissionModel> | string) => Promise<boolean>;
-  hasPermissionViaRole: (permission: InstanceType<PermissionModel> | string) => Promise<boolean>;
-  getDirectPermissions: () => Promise<InstanceType<PermissionModel>[]>;
-  getPermissionsViaRoles: () => Promise<InstanceType<PermissionModel>[]>;
-  getAllPermissions: () => Promise<InstanceType<PermissionModel>[]>;
+  hasDirectPermission(permission: InstanceType<PermissionModel> | string): Promise<boolean>;
+  hasPermissionViaRole(permission: InstanceType<PermissionModel> | string): Promise<boolean>;
+  getDirectPermissions(): Promise<InstanceType<PermissionModel>[]>;
+  getPermissionsViaRoles(): Promise<InstanceType<PermissionModel>[]>;
+  getAllPermissions(): Promise<InstanceType<PermissionModel>[]>;
 }
 
 export interface MixinWithAuthorizable

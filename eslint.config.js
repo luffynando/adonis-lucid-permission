@@ -9,4 +9,10 @@ export default defineFlatConfig([
       '@typescript-eslint/require-await': 'off',
     },
   },
+  {
+    files: ['tests/mixins/**.spec.ts'],
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
+    },
+  },
 ]);

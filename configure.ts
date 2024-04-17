@@ -16,12 +16,14 @@ import type ConfigureCommand from '@adonisjs/core/commands/configure';
 import { stubsRoot } from './stubs/main.js';
 
 const configure = async function (command: ConfigureCommand): Promise<void> {
-  const { defaults, migrations } = command.parsedFlags as {
+  const { defaults, migrations, middlewares } = command.parsedFlags as {
     defaults: boolean | undefined;
     migrations: boolean | undefined;
+    middlewares: boolean | undefined;
   };
 
   let shouldCreateMigrations = migrations;
+  let shouldInstallMiddlewares = middlewares;
 
   const defaultConfig = {
     rolesTable: 'roles',
@@ -64,6 +66,15 @@ const configure = async function (command: ConfigureCommand): Promise<void> {
     );
   }
 
+  if (shouldInstallMiddlewares === undefined) {
+    shouldInstallMiddlewares = await command.prompt.confirm(
+      'Do you want to register middlewares?',
+      {
+        name: 'middlewares',
+      },
+    );
+  }
+
   const codemods = await command.createCodemods();
 
   /** Publish provider */
@@ -98,6 +109,23 @@ const configure = async function (command: ConfigureCommand): Promise<void> {
       permissionsTable: defaultConfig.permissionsTable,
       rolesTable: defaultConfig.rolesTable,
     });
+  }
+
+  if (shouldInstallMiddlewares) {
+    await codemods.registerMiddleware('named', [
+      {
+        name: 'role',
+        path: 'adonis-lucid-permission/role_middleware',
+      },
+      {
+        name: 'permission',
+        path: 'adonis-lucid-permission/permission_middleware',
+      },
+      {
+        name: 'roleOrPermission',
+        path: 'adonis-lucid-permission/role_or_permission_middleware',
+      },
+    ]);
   }
 };
 

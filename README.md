@@ -161,6 +161,51 @@ await user.getPermissionsViaRoles();
 await user.getAllPermissions();
 ```
 
+### Protect routes with middlewares
+
+After version `1.1.0` added middlewares for protect routes using roles, permissions, or roles and permissions. Please check your `start/kernel.ts` file and middleware router named register like:
+
+```ts
+export const middleware = router.named({
+  //...
+  role: () => import('adonis-lucid-permission/role_middleware'),
+  permission: () => import('adonis-lucid-permission/permission_middleware'),
+  roleOrPermission: () => import('adonis-lucid-permission/role_or_permission_middleware'),
+  //...
+});
+```
+
+And in your router file, use after `middleware.auth()`, example:
+
+```ts
+import router from '@adonisjs/core/services/router';
+import { middleware } from '#start/kernel';
+
+router
+  .post('projects', async ({ auth }) => {
+    console.log(auth.user); // User
+  })
+  .use([
+    middleware.auth(),
+    middleware.permission({ permissions: ['publish projects', 'edit projects'] }),
+  ]);
+
+router
+  .post('posts', async ({ auth }) => {
+    console.log(auth.user); // User
+  })
+  .use([middleware.auth(), middleware.role({ roles: ['editor', 'administrator', 'publisher'] })]);
+
+router
+  .post('projects', async ({ auth }) => {
+    console.log(auth.user); // User
+  })
+  .use([
+    middleware.auth(),
+    middleware.roleOrPermission({ roleOrPermission: ['administrator', 'publish projects'] }),
+  ]);
+```
+
 ## Copyright and License
 
 The `adonis-lucid-permission` library is licensed for use under the MIT License (MIT). Please see [LICENSE][] for more information.
