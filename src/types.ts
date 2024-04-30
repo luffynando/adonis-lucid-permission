@@ -62,6 +62,8 @@ export interface HasAuthorizableMethods {
   getDirectPermissions(): Promise<InstanceType<PermissionModel>[]>;
   getPermissionsViaRoles(): Promise<InstanceType<PermissionModel>[]>;
   getAllPermissions(): Promise<InstanceType<PermissionModel>[]>;
+  withPermissionTo(permission: InstanceType<PermissionModel> | string): Promise<boolean>;
+  canAnyPermission(...permissions: (InstanceType<PermissionModel> | string)[]): Promise<boolean>;
 }
 
 export interface MixinWithAuthorizable

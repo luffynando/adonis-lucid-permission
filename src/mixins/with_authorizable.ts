@@ -80,6 +80,29 @@ export const withAuthorizable = (config: AuthorizableConfig) => {
 
         return [...this.permissions, ...this.roles.map((r) => r.permissions)].flat();
       }
+
+      public async withPermissionTo(
+        this: MixinModelWithAuthorizable & ModelWithAuthorizable,
+        permission: string | InstanceType<PermissionModel>,
+      ): Promise<boolean> {
+        return (
+          (await this.hasDirectPermission(permission)) ||
+          (await this.hasPermissionViaRole(permission))
+        );
+      }
+
+      public async canAnyPermission(
+        this: MixinModelWithAuthorizable & ModelWithAuthorizable,
+        ...permissions: (InstanceType<PermissionModel> | string)[]
+      ): Promise<boolean> {
+        for (const permission of permissions) {
+          if (await this.withPermissionTo(permission)) {
+            return true;
+          }
+        }
+
+        return false;
+      }
     }
 
     return ModelWithAuthorizable;
