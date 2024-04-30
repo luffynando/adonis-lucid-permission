@@ -204,4 +204,63 @@ test.group('with authorizable', () => {
       ['permission1', 'permission2'],
     );
   });
+
+  test('can get with permission to check', async ({ assert }) => {
+    const { HasAuthorizable, app, Role } = await init();
+    const db = await createDatabase(app);
+
+    await createTables(db);
+
+    class Model extends compose(BaseModel, HasAuthorizable) {
+      @column({ isPrimary: true })
+      public declare id: number;
+    }
+
+    const model = await Model.create({});
+
+    await model.givePermissionTo('permission1');
+    const role = await Role.create({ name: 'role1' });
+    const role2 = await Role.create({ name: 'role2' });
+
+    await role.givePermissionTo('permission2');
+    await role2.givePermissionTo('permission3');
+    await model.assignRole(role);
+
+    const directPermission = await model.withPermissionTo('permission1');
+    const permissionViaRole = await model.withPermissionTo('permission2');
+    const notInModelPermission = await model.withPermissionTo('permission3');
+
+    assert.isTrue(directPermission);
+    assert.isTrue(permissionViaRole);
+    assert.isFalse(notInModelPermission);
+
+    assert.isTrue(await role2.hasPermissionTo('permission3'));
+  });
+
+  test('can check if a model has any of the given permissions directly or via role', async ({
+    assert,
+  }) => {
+    const { HasAuthorizable, app, Role } = await init();
+    const db = await createDatabase(app);
+
+    await createTables(db);
+
+    class Model extends compose(BaseModel, HasAuthorizable) {
+      @column({ isPrimary: true })
+      public declare id: number;
+    }
+
+    const model = await Model.create({});
+
+    await model.givePermissionTo('permission1');
+    const role = await Role.create({ name: 'role1' });
+
+    await role.givePermissionTo('permission2');
+    await model.assignRole(role);
+
+    assert.isTrue(await model.canAnyPermission('permission1', 'permission2'));
+    assert.isTrue(await model.canAnyPermission('permission1'));
+    assert.isTrue(await model.canAnyPermission('permission2'));
+    assert.isFalse(await model.canAnyPermission('permission3'));
+  });
 });

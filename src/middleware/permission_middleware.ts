@@ -33,6 +33,10 @@ export default class PermissionMiddleware {
       ? options.permissions
       : options.permissions.split('|');
 
+    if ('canAnyPermission' in user && !(await user.canAnyPermission(...permissions))) {
+      throw E_PERMISSION_UNAUTHORIZED_ACCESS.forPermissions(permissions);
+    }
+
     if (!(await user.hasAnyPermission(...permissions))) {
       throw E_PERMISSION_UNAUTHORIZED_ACCESS.forPermissions(permissions);
     }
