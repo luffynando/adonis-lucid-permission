@@ -1,5 +1,18 @@
 # adonis-lucid-permission ChangeLog
 
+## 1.1.2
+
+- Fix middleware permissions for allow find permission directly or via role.
+- Update dependencies
+
+## 1.1.1
+
+- Add middlewares for protect routes using roles, permissions, or roles and permissions
+
+## 1.1.0
+
+- Add middlewares without register in config
+
 ## 1.0.5
 
 ### Minor Changes - Types for Result mixins

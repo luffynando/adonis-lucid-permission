@@ -159,6 +159,12 @@ await user.getPermissionsViaRoles();
 
 // Get all permissions combined
 await user.getAllPermissions();
+
+// Check if the model has the permission directly or via role
+await user.withPermissionTo('do-things');
+
+// Returns true if the model has any of the given permissions directly or via role
+await user.canAnyPermission('do-things', 'try-things');
 ```
 
 ### Protect routes with middlewares
