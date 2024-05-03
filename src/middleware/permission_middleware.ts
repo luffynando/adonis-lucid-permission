@@ -3,7 +3,11 @@ import { RuntimeException } from '@adonisjs/core/exceptions';
 import { type HttpContext } from '@adonisjs/core/http';
 import { type NextFn } from '@adonisjs/core/types/http';
 import { E_PERMISSION_UNAUTHORIZED_ACCESS } from '../errors.js';
-import { type MixinModelWithAuthorizable } from '../types.js';
+import {
+  type MixinModelWithAuthorizable,
+  type MixinWithAuthorizable,
+  type MixinWithPermissions,
+} from '../types.js';
 
 export default class PermissionMiddleware {
   public async handle(
@@ -25,7 +29,7 @@ export default class PermissionMiddleware {
       throw E_PERMISSION_UNAUTHORIZED_ACCESS.notLoggedIn();
     }
 
-    if (!('hasAnyPermission' in user)) {
+    if (!('hasAnyPermission' in user) && !('canAnyPermission' in user)) {
       throw E_PERMISSION_UNAUTHORIZED_ACCESS.missingMixinWithAuthorizable(user);
     }
 
@@ -33,10 +37,30 @@ export default class PermissionMiddleware {
       ? options.permissions
       : options.permissions.split('|');
 
-    if ('canAnyPermission' in user && !(await user.canAnyPermission(...permissions))) {
+    if ('canAnyPermission' in user) {
+      return this.checkPermissionsInUserWithAuthorizable(next, user, permissions);
+    }
+
+    return this.checkPermissionsInUserWithPermissions(next, user, permissions);
+  }
+
+  private async checkPermissionsInUserWithAuthorizable(
+    next: NextFn,
+    user: MixinWithAuthorizable,
+    permissions: string[],
+  ): Promise<unknown> {
+    if (!(await user.canAnyPermission(...permissions))) {
       throw E_PERMISSION_UNAUTHORIZED_ACCESS.forPermissions(permissions);
     }
 
+    return next() as unknown;
+  }
+
+  private async checkPermissionsInUserWithPermissions(
+    next: NextFn,
+    user: MixinWithPermissions,
+    permissions: string[],
+  ): Promise<unknown> {
     if (!(await user.hasAnyPermission(...permissions))) {
       throw E_PERMISSION_UNAUTHORIZED_ACCESS.forPermissions(permissions);
     }
