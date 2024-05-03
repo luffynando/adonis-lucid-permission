@@ -1,5 +1,10 @@
 # adonis-lucid-permission ChangeLog
 
+## 1.1.3
+
+- Fix middleware permissions handle correctly user with authorizable or user with permissions mixin
+- Small refactoring
+
 ## 1.1.2
 
 - Fix middleware permissions for allow find permission directly or via role.
