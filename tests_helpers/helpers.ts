@@ -1,4 +1,5 @@
 import { mkdir } from 'node:fs/promises';
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import path from 'node:path';
 import { type Kernel } from '@adonisjs/core/ace';
 import { Emitter } from '@adonisjs/core/events';
@@ -204,3 +205,22 @@ export const getMixins = async (): Promise<{
       Permission,
     };
   }, 'createMixins');
+
+/**
+ * Create a http server that will be closed automatically
+ * when the test ends
+ */
+export const httpServer = {
+  create(callback: (req: IncomingMessage, res: ServerResponse) => unknown): Server {
+    const server = createServer(callback);
+    getActiveTest()?.cleanup(async () => {
+      await new Promise<void>((resolve) => {
+        server.close(() => {
+          resolve();
+        });
+      });
+    });
+
+    return server;
+  },
+};
