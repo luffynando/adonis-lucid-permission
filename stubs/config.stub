@@ -8,5 +8,12 @@ export default defineConfig({
     roles: '{{ config.rolesTable }}',
     permissions: '{{ config.permissionsTable }}',
     roleHasPermissions: '{{ config.roleHasPermissionsTable }}',
-  }
+  },
+  columnNames: {
+    rolePivotKey: 'role_id',
+    permissionPivotKey: 'permission_id',
+    modelMorphKey: 'model_id',
+    teamForeignKey: 'team_id',
+  },
+  teams: {{ config.teams }}
 })

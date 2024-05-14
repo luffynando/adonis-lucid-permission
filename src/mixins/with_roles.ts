@@ -1,3 +1,4 @@
+import app from '@adonisjs/core/services/app';
 import { type NormalizeConstructor } from '@adonisjs/core/types/helpers';
 import { type BaseModel, manyToMany } from '@adonisjs/lucid/orm';
 import { type ManyToMany } from '@adonisjs/lucid/types/relations';
@@ -5,14 +6,17 @@ import { Role } from '../../services/role.js';
 import { type MixinModelWithRoles, type MixinWithRoles, type RoleModel } from '../types.js';
 
 export const withRoles = (tableName: string) => {
+  const rolePivotKey = app.config.get<string>('permissions.columnNames.rolePivotKey', 'role_id');
+  const modelMorphKey = app.config.get<string>('permissions.columnNames.modelMorphKey', 'model_id');
+
   return <Model extends NormalizeConstructor<typeof BaseModel>>(
     superclass: Model,
   ): NormalizeConstructor<MixinModelWithRoles> & Model => {
     class ModelWithRoles extends superclass implements MixinWithRoles {
       @manyToMany(() => Role, {
         pivotTable: tableName,
-        pivotForeignKey: 'model_id',
-        pivotRelatedForeignKey: 'role_id',
+        pivotForeignKey: modelMorphKey,
+        pivotRelatedForeignKey: rolePivotKey,
       })
       public declare roles: ManyToMany<typeof Role>;
 

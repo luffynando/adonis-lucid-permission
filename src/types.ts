@@ -112,6 +112,13 @@ export type PermissionsConfig = {
     permissions: string;
     roleHasPermissions: string;
   };
+  columnNames?: {
+    rolePivotKey: string;
+    permissionPivotKey: string;
+    modelMorphKey: string;
+    teamForeignKey: string;
+  };
+  teams?: boolean;
 };
 
 export type ResolvedPermissionConfig = Required<PermissionsConfig>;

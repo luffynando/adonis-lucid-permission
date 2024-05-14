@@ -13,6 +13,13 @@ test.group('define config', () => {
         permissions: 'permissions',
         roleHasPermissions: 'role_has_permissions',
       },
+      columnNames: {
+        modelMorphKey: 'model_id',
+        permissionPivotKey: 'permission_id',
+        rolePivotKey: 'role_id',
+        teamForeignKey: 'team_id',
+      },
+      teams: false,
     };
 
     assert.deepEqual(result, defaultValues);

@@ -10,6 +10,13 @@ const defineConfig = (config: PermissionsConfig): ConfigProvider<ResolvedPermiss
         permissions: config.tableNames?.permissions ?? 'permissions',
         roleHasPermissions: config.tableNames?.roleHasPermissions ?? 'role_has_permissions',
       },
+      columnNames: {
+        rolePivotKey: config.columnNames?.rolePivotKey ?? 'role_id',
+        permissionPivotKey: config.columnNames?.permissionPivotKey ?? 'permission_id',
+        modelMorphKey: config.columnNames?.modelMorphKey ?? 'model_id',
+        teamForeignKey: config.columnNames?.teamForeignKey ?? 'team_id',
+      },
+      teams: config.teams ?? false,
     };
   });
 };
